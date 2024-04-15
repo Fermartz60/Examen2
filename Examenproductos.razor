@@ -1,0 +1,125 @@
+﻿@page "/examen2"
+@rendermode InteractiveServer
+@using BlazorApp1.Data
+
+<h1>Productos</h1>
+
+<EditForm Model="_persona" FormName="frmPersona" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    @*  @<ValidationSummary />@ *@
+
+    <div class="col">
+        <div class="col">
+            <div class="form-group">
+                <div style="display: flex; align-items: center;">
+                <label class="form-label col-2">Inventario</label>
+                <InputText class="form-control col-10" @bind-Value="@_persona.Inventario"></InputText> <br>
+                </div>
+                <ValidationMessage For="()=>_persona.Inventario" />
+            </div>
+        </div>
+        <br />
+        <div class="col">
+            <div class="form-group">
+                <div style="display: flex; align-items: center;">
+                <label class="form-label col-2">Nombre</label>
+                <InputText class="form-control col-10" @bind-Value="@_persona.Nombre"></InputText> <br>
+                </div>
+                <ValidationMessage For="()=>_persona.Nombre"></ValidationMessage>
+            </div>
+        </div>
+        <br />
+        <div class="col">
+
+            <label class="form-label col-2">Departamento</label><br />
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="frutas" name="departamento" @bind="SelectedDepartamento">
+                <label class="form-check-label" for="frutas">Frutas</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="verduras" name="departamento" @bind="SelectedDepartamento">
+                <label class="form-check-label" for="verduras">Verduras</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="lacteos" name="departamento" @bind="SelectedDepartamento">
+                <label class="form-check-label" for="lacteos">Lácteos</label>
+            </div>
+            <ValidationMessage For="()=>_persona.SelectedDepartamento"></ValidationMessage>
+
+        </div>
+
+
+
+
+    </div>
+
+    <button class="btn btn-primary my-3" type="submit">Guardar</button>
+    <button class="btn btn-danger my-3" @onclick="Limpiar" @onclick:preventDefault>Limpiar</button>
+    <button class="btn btn-dark ms-3" @onclick="Filtrar" @onclick:preventDefault>Filtrar</button>
+
+</EditForm>
+
+@if (Personas.Count() > 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Inventario</th>
+                <th>Nombre</th>
+                <th>Departamento</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Persona elemento in Personas)
+
+            {
+                <tr>
+                    <td>@elemento.Inventario</td>
+                    <td>@elemento.Nombre</td>
+                    <td>@elemento.SelectedDepartamento</td>
+                    <td>
+                        <button @onclick="()=>Eliminar(elemento)">Borrar</button>
+                        <button @onclick="()=>Eliminar(elemento)">Editar</button>
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+
+
+
+    private string SelectedDepartamento { get; set; }
+    private List<Persona> Personas = new List<Persona>();
+    private Persona _persona = new Persona();
+
+    private void Guardar()
+    {
+        if (_persona.Nombre!.Length > 0)
+        {
+            Personas.Add(_persona);
+            _persona = new Persona();
+        }
+
+    }
+    private void Limpiar()
+    {
+        Personas.Clear();
+    }
+    private void Filtrar()
+    {
+        Personas = Personas.Where(r => r.Nombre.Contains(_persona.Nombre)).ToList();
+    }
+    private void Eliminar(Persona persona)
+    {
+        Personas.Remove(persona);
+    }
+
+
+}
